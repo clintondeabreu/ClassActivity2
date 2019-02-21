@@ -1,0 +1,94 @@
+﻿@model Assignment2.Models.AdvancedVM
+@using Assignment2.Models
+@using System.Globalization
+@using System.Data
+
+
+<h1>Employee Report By Department:</h1>
+
+<div class="criteria">
+
+    @using (Html.BeginForm("Advanced", "Home", FormMethod.Post))
+    {
+        <label>Select Department:</label>
+        @Html.DropDownListFor(m => m.SelectedDepartmentID, Model.Departments, "-- Please select --", new { @class = "form-control" })
+        <label>From:</label>
+        @Html.TextBoxFor(m => m.DateFrom, "yyyy-MM-dd", new { @Value = "1976-01-01", @type = "date", @class = "form-control" })
+        <label>To:</label>
+        @Html.TextBoxFor(m => m.DateTo, "yyyy-MM-dd", new { @Value = "2011-12-31", @type = "date", @class = "form-control" })
+        <br />
+        <input type="submit" value="Generate" class="btn-primary" />
+    }
+    <br />
+</div>
+@if (Model.depEmployess != null)
+{
+    if (Model.department != null)
+    {
+        <div class="panel panel-success">
+            <div class="panel-heading"><strong>Department Details: </strong></div>
+            <div class="panel-body">
+                <label>Department number: </label>@Model.department.dept_num<br />
+                <label>Department name: </label>@Model.department.dept_name<br />
+                <label>Department phone: </label>@Model.department.dept_phone<br />
+            </div>
+        </div>
+
+
+        <div class="panel">
+            @if (Model.chartData != null)
+            {
+                <img src="@Url.Action("ChartDepartment", "Home")" />
+            }
+        </div>
+
+
+
+        <div class="panel panel-info">
+            @foreach (var group in Model.results)
+            {
+                <h4>@group.Key:</h4>
+                <table class="table table-striped">
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Employee Surname</th>
+                        <th>Employee Department Number</th>
+                        <th>Employee Title</th>
+
+                    </tr>
+                    @foreach (DepartmentEmployees groupItem in group)
+                    {
+                        <tr>
+                            <td>@groupItem.EmployeeFName</td>
+                            <td>@groupItem.EmployeeSName</td>
+                            <td>@groupItem.deptNum</td>
+                            <td>@groupItem.EmployeeTitle</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong>@group.Count(item => Convert.ToBoolean(item.deptNum))</strong></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+                <hr />
+            }
+            <h3>Grand Total Of Employees: <strong>@Model.results.Sum(group => group.Count(item => Convert.ToBoolean(item.deptNum)))</strong></h3>
+        </div>
+
+        <div>
+            @Html.ActionLink("Export as PDF", "ExportAdvancedPDF", "Home")<br />
+            @Html.ActionLink("Export as Word", "ExportAdvancedWord", "Home")
+        </div>
+
+    }
+}
+
+
+
+
+
+
+
+
